@@ -17,6 +17,13 @@ globs: **/*
 - Delete dead code immediately
 - One concept per file
 
+## Code Minimalism
+- Less code is always better
+- Delete unused components immediately
+- No dead code, no commented-out code
+- If a component isn't used, it doesn't exist
+- Every line must earn its place
+
 ## Process
 ```
 1. Understand the requirement fully
