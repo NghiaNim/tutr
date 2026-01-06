@@ -32,5 +32,13 @@ export const IB_SUBJECTS = [
   "Computer Science",
 ] as const;
 
+export const TYPEWRITER_WORDS = [
+  "Biology",
+  "Calculus",
+  "Physics",
+  "Economics",
+  "History",
+];
+
 export type APSubject = (typeof AP_SUBJECTS)[number];
 export type IBSubject = (typeof IB_SUBJECTS)[number];

@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { TypewriterText } from "@/components/shared/typewriter-text";
+import { TYPEWRITER_WORDS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function PathSelector() {
   return (
     <div className="min-h-[calc(100vh-57px)] flex flex-col items-center justify-center px-4">
       <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-center mb-12">
-        Find your tutor.
+        Find your <TypewriterText words={TYPEWRITER_WORDS} /> tutor.
       </h1>
 
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
@@ -28,11 +30,10 @@ function PathCard({ href, title }: { href: string; title: string }) {
         "flex-1 flex items-center justify-center",
         "h-32 sm:h-40 rounded-lg border border-border bg-card",
         "text-lg font-medium",
-        "hover:border-accent hover:shadow-sm transition-all"
+        "hover:border-[#2563EB] hover:shadow-sm transition-all"
       )}
     >
       {title}
     </Link>
   );
 }
-

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { submitInquiry } from "@/app/actions";
 
 type InquiryFormProps = {
   examType: string;
@@ -11,23 +12,32 @@ type InquiryFormProps = {
 };
 
 export function InquiryForm({ examType, subject }: InquiryFormProps) {
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setStatus("loading");
+    setErrorMessage("");
+
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      goals: formData.get("goals"),
+    const result = await submitInquiry({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
       examType,
       subject,
-    };
-    console.log("Inquiry submitted:", data);
-    setSubmitted(true);
+      message: formData.get("goals") as string,
+    });
+
+    if (result.success) {
+      setStatus("success");
+    } else {
+      setStatus("error");
+      setErrorMessage(result.error || "Something went wrong");
+    }
   };
 
-  if (submitted) {
+  if (status === "success") {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-semibold mb-2">Thank you</h2>
@@ -72,10 +82,18 @@ export function InquiryForm({ examType, subject }: InquiryFormProps) {
         />
       </div>
 
-      <Button type="submit" variant="accent" className="w-full">
-        Submit Request
+      {status === "error" && (
+        <p className="text-sm text-red-600">{errorMessage}</p>
+      )}
+
+      <Button
+        type="submit"
+        variant="accent"
+        className="w-full"
+        disabled={status === "loading"}
+      >
+        {status === "loading" ? "Submitting..." : "Submit Request"}
       </Button>
     </form>
   );
 }
-

@@ -5,12 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { AP_SUBJECTS, IB_SUBJECTS } from "@/lib/constants";
+import { submitTutorApplication } from "@/app/actions";
 import { cn } from "@/lib/utils";
 
-const ALL_SUBJECTS = [...AP_SUBJECTS.map((s) => `AP ${s}`), ...IB_SUBJECTS.map((s) => `IB ${s}`)];
+const ALL_SUBJECTS = [
+  ...AP_SUBJECTS.map((s) => `AP ${s}`),
+  ...IB_SUBJECTS.map((s) => `IB ${s}`),
+];
 
 export function TutorApplicationForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
 
   const toggleSubject = (subject: string) => {
@@ -21,20 +26,28 @@ export function TutorApplicationForm() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setStatus("loading");
+    setErrorMessage("");
+
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
+    const result = await submitTutorApplication({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
       subjects: selectedSubjects,
-      background: formData.get("background"),
-    };
-    console.log("Tutor application submitted:", data);
-    setSubmitted(true);
+      background: formData.get("background") as string,
+    });
+
+    if (result.success) {
+      setStatus("success");
+    } else {
+      setStatus("error");
+      setErrorMessage(result.error || "Something went wrong");
+    }
   };
 
-  if (submitted) {
+  if (status === "success") {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-semibold mb-2">Application received</h2>
@@ -80,8 +93,8 @@ export function TutorApplicationForm() {
               className={cn(
                 "px-2 py-1.5 text-xs rounded border text-left transition-colors",
                 selectedSubjects.includes(subject)
-                  ? "bg-accent text-accent-foreground border-accent"
-                  : "bg-background border-input hover:border-accent"
+                  ? "bg-[#2563EB] text-white border-[#2563EB]"
+                  : "bg-background border-input hover:border-[#2563EB]"
               )}
             >
               {subject}
@@ -107,15 +120,18 @@ export function TutorApplicationForm() {
         />
       </div>
 
+      {status === "error" && (
+        <p className="text-sm text-red-600">{errorMessage}</p>
+      )}
+
       <Button
         type="submit"
         variant="accent"
         className="w-full"
-        disabled={selectedSubjects.length === 0}
+        disabled={status === "loading" || selectedSubjects.length === 0}
       >
-        Apply to Tutor
+        {status === "loading" ? "Submitting..." : "Apply to Tutor"}
       </Button>
     </form>
   );
 }
-
