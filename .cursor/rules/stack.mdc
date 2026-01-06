@@ -1,0 +1,54 @@
+---
+description: Technology stack and tooling decisions
+globs: **/*
+---
+
+# Tech Stack
+
+## Core
+| Layer | Choice | Rationale |
+|-------|--------|-----------|
+| Framework | Next.js 15 (App Router) | Full-stack, RSC, API routes |
+| Language | TypeScript | Type safety end-to-end |
+| Runtime | Node.js 20+ | LTS, native fetch |
+
+## Database & ORM
+| Tool | Purpose |
+|------|---------|
+| Supabase | Postgres + Auth + Realtime |
+| Drizzle ORM | Type-safe queries, migrations |
+
+## Auth & Payments
+| Tool | Purpose |
+|------|---------|
+| Supabase Auth | OAuth, magic links, RLS |
+| Stripe | Payments, tutor payouts |
+
+## Real-time
+| Tool | Purpose |
+|------|---------|
+| Supabase Realtime | Tutor matching, notifications |
+| Presence | Online status, availability |
+
+## AI Integration
+| Tool | Purpose |
+|------|---------|
+| Vercel AI SDK | Streaming, tool calling |
+| OpenAI | Tutor matching, study plans |
+
+## UI
+| Tool | Purpose |
+|------|---------|
+| Tailwind CSS | Styling |
+| shadcn/ui | Component primitives |
+| Framer Motion | Animations |
+
+## Dev Tools
+```json
+{
+  "formatter": "biome",
+  "linter": "biome",
+  "testing": "vitest + playwright",
+  "ci": "github actions"
+}
+```

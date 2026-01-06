@@ -1,0 +1,62 @@
+---
+description: Backend resource architecture pattern
+globs: src/server/**/*
+---
+
+# Backend Resource Pattern
+
+## Structure
+```
+src/server/resources/{resource}/
+├── route.ts      # API entry points only
+├── service.ts    # Workflow orchestration
+├── actions.ts    # DB/API operations
+├── schema.ts     # Zod schemas + types
+└── types.ts      # Additional TS types (optional)
+```
+
+## Layer Rules
+
+### route.ts
+```typescript
+// ✅ Routes call services only
+export const POST = async (req: Request) => {
+  const body = createBookingSchema.parse(await req.json());
+  const result = await bookingService.create(body);
+  return Response.json(result);
+};
+```
+
+### service.ts
+```typescript
+// ✅ Services orchestrate actions
+export const bookingService = {
+  async create(input: CreateBookingInput) {
+    const tutor = await tutorActions.findAvailable(input.tutorId, input.time);
+    if (!tutor) throw new NotFoundError("Tutor unavailable");
+    const booking = await bookingActions.create({ ...input, tutorId: tutor.id });
+    await notificationActions.sendBookingConfirmed(booking);
+    return booking;
+  }
+};
+```
+
+### actions.ts
+```typescript
+// ✅ Actions are atomic, single-responsibility
+export const bookingActions = {
+  create: (data: CreateBookingInput) => db.insert(bookings).values(data),
+  findById: (id: string) => db.query.bookings.findFirst({ where: eq(bookings.id, id) }),
+};
+```
+
+### schema.ts
+```typescript
+export const createBookingSchema = z.object({
+  tutorId: z.string().uuid(),
+  studentId: z.string().uuid(),
+  startTime: z.string().datetime(),
+  duration: z.number().min(30).max(180),
+});
+export type CreateBookingInput = z.infer<typeof createBookingSchema>;
+```

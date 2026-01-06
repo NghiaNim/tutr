@@ -1,0 +1,60 @@
+---
+description: Naming conventions across the codebase
+globs: **/*
+---
+
+# Naming Conventions
+
+## Files & Folders
+```
+kebab-case/
+├── tutor-profile.tsx       # Components
+├── use-booking.ts          # Hooks (use- prefix)
+├── booking.service.ts      # Services (optional .service suffix)
+└── create-booking.schema.ts
+```
+
+## Functions & Variables
+```typescript
+// camelCase for functions/variables
+const currentUser = await getAuthUser();
+const isAvailable = checkTutorAvailability(tutorId, timeSlot);
+
+// PascalCase for components/classes/types
+function TutorProfile({ tutor }: TutorProfileProps) {}
+type BookingStatus = "pending" | "confirmed" | "cancelled";
+
+// SCREAMING_SNAKE for constants
+const MAX_SESSION_DURATION = 180;
+const BOOKING_STATUS = { PENDING: "pending", CONFIRMED: "confirmed" } as const;
+```
+
+## API Endpoints
+```
+/api/tutors              GET    - list
+/api/tutors/:id          GET    - get one
+/api/tutors              POST   - create
+/api/tutors/:id          PATCH  - update
+/api/tutors/:id          DELETE - delete
+/api/tutors/:id/sessions GET    - nested resource
+```
+
+## Database
+```sql
+-- snake_case for tables and columns
+CREATE TABLE bookings (
+  id UUID PRIMARY KEY,
+  tutor_id UUID REFERENCES tutors(id),
+  student_id UUID REFERENCES users(id),
+  start_time TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+## Events & Actions
+```typescript
+// verb:noun pattern
+"booking:created"
+"tutor:matched"
+"session:started"
+```

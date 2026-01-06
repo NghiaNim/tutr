@@ -1,0 +1,73 @@
+---
+description: Frontend component and state patterns
+globs: app/**/*,components/**/*
+---
+
+# Frontend Patterns
+
+## Mobile-First
+```css
+/* Always start with mobile, scale up */
+.component { /* mobile styles first */ }
+@media (min-width: 768px) { /* tablet */ }
+@media (min-width: 1024px) { /* desktop */ }
+```
+
+## Structure
+```
+app/
+├── page.tsx                # Landing page
+├── layout.tsx              # Root layout
+├── globals.css
+components/
+├── ui/                     # Shadcn primitives
+├── landing/                # Landing page sections
+├── shared/                 # Reusable components
+lib/
+├── utils.ts
+├── constants.ts
+```
+
+## Component Pattern
+```typescript
+// features/tutor-card.tsx
+type TutorCardProps = {
+  tutor: Tutor;
+  onBook: (tutorId: string) => void;
+};
+
+export function TutorCard({ tutor, onBook }: TutorCardProps) {
+  return (
+    <Card>
+      <CardHeader>{tutor.name}</CardHeader>
+      <CardContent>{tutor.subjects.join(", ")}</CardContent>
+      <CardFooter>
+        <Button onClick={() => onBook(tutor.id)}>Book Session</Button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+
+## Data Fetching
+```typescript
+// Server Components for initial data
+// app/tutors/page.tsx
+export default async function TutorsPage() {
+  const tutors = await getTutors();
+  return <TutorList tutors={tutors} />;
+}
+
+// Client hooks for mutations
+const { mutate: createBooking } = useMutation(api.bookings.create);
+```
+
+## State Management
+```typescript
+// stores/booking.ts - Zustand for complex client state
+export const useBookingStore = create<BookingState>((set) => ({
+  selectedTutor: null,
+  selectedTime: null,
+  setTutor: (tutor) => set({ selectedTutor: tutor }),
+}));
+```

@@ -1,0 +1,44 @@
+---
+description: Key architectural decisions and rationale
+globs: **/*
+---
+
+# Architecture Decisions
+
+## Framework
+- **Next.js 15**: Server Components reduce client bundle, App Router enables colocation
+- **Monorepo: No**: Single app simplicity until proven otherwise
+
+## Database
+- **Supabase over raw Postgres**: Built-in auth, realtime, storage, RLS
+- **Drizzle over Prisma**: Lighter, SQL-like syntax, better edge support
+
+## Auth
+- **Supabase Auth**: Unified with DB, supports OAuth + magic links + RLS
+- **Dual roles**: Users have `role: "student" | "tutor" | "both"`
+
+## Real-time Matching
+- **Supabase Realtime subscriptions**: Listen to tutor availability changes
+- **Presence channel**: Show online tutors, enable instant booking
+
+## Payments
+- **Stripe Connect**: Platform model for tutor payouts
+- **Escrow pattern**: Hold funds until session confirmed complete
+
+## AI Strategy
+- **Tutor matching**: Embed student needs + tutor profiles, vector similarity
+- **Study plans**: Generate personalized AP/IB prep schedules
+- **Session summaries**: Auto-generate from session notes
+
+## File Structure
+- **Feature-based**: `/server/resources/{domain}/` not `/controllers`, `/services`
+- **Colocation**: Keep related code together (route + service + schema)
+
+## API Design
+- **REST for CRUD**: Simple, cacheable
+- **Server Actions for mutations**: Type-safe, no API boilerplate
+- **tRPC: No**: Adds complexity, Server Actions sufficient
+
+## State Management
+- **Server-first**: RSC + React Query for most data
+- **Zustand**: Only for complex client-only state (booking flow wizard)

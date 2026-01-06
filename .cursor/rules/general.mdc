@@ -1,0 +1,49 @@
+---
+description: Core development principles for Tutr
+globs: **/*
+---
+
+# General Principles
+
+## Philosophy
+- Think first, build second
+- Explicit over implicit
+- Small, focused commits
+- Code is documentation
+
+## Code Style
+- Minimize comments - name things clearly instead
+- No separate .md files - docs live in cursor rules only
+- Delete dead code immediately
+- One concept per file
+
+## Process
+```
+1. Understand the requirement fully
+2. Check existing patterns in codebase
+3. Implement minimal solution
+4. Refactor only if needed
+```
+
+## Anti-patterns
+```typescript
+// ❌ Bad: Comment explaining obvious code
+// Increment counter by 1
+counter++;
+
+// ✅ Good: Self-documenting name
+const nextPageIndex = currentPageIndex + 1;
+
+// ❌ Bad: Magic values
+if (status === 3) { ... }
+
+// ✅ Good: Named constants
+if (status === BookingStatus.CONFIRMED) { ... }
+```
+
+## Commits
+```
+feat(resource): add tutor availability endpoint
+fix(booking): handle timezone edge case
+refactor(auth): extract token validation
+```
